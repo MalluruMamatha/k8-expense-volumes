@@ -64,7 +64,7 @@ spec:
   - metadata:
       name: mysql
     spec:
-      accessModes: ["ReadWriteOnce"]
+      accessModes: [ "ReadWriteOnce" ]
       storageClassName: "expense-sc"
       resources:
         requests:
