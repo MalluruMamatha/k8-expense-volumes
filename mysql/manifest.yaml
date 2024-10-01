@@ -1,0 +1,71 @@
+### headless service
+apiVersion: v1
+kind: service
+metadata:
+  name: mysql-headless
+  Namespace: expense
+spec:
+  clusterIp: None
+  selector: 
+    app: mysql 
+    project: expense
+    tier: db
+  ports:
+  - protocol: tcp
+    port: 3306
+    target port: 3306
+---
+### standared service to access the pods from outside of the cluster
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  namespace: expense
+spec:
+  selector:
+    app: mysql 
+    project: expense
+    tier: db
+  ports:
+  - protocol: TCP
+    port: 3306 #service-port
+    targetPort: 3306 #target-port
+---
+
+## statefullset 
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql
+spec:
+  selector:
+    matchLabels:
+      app: mysql 
+      project: expense
+      tier: db 
+  serviceName: "mysql-headless" ### headless service name we have to give here
+  replicas: 2 
+  template:
+    metadata:
+      labels:
+        app: mysql 
+        project: expense
+        tier: db  
+    spec:
+      containers:
+      - name: mysql
+        image: mallurumamatha/mysql:v1.0
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: mysql
+          mountPath: /var/lib/mysql
+  volumeClaimTemplates: #### volume can be assigned to each pod saparately
+  - metadata:
+      name: mysql
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "expense-sc"
+      resources:
+        requests:
+          storage: 1Gi
+
