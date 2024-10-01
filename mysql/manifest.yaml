@@ -3,17 +3,16 @@ apiVersion: v1
 kind: Service
 metadata:
   name: mysql-headless
-  namespace: expense  # "Namespace" should be "namespace" (lowercase)
+  namespace: expense  
 spec:
-  clusterIP: None  # "clusterIp" should be "clusterIP" (case-sensitive)
-  selector:  # Corrected key (singular, not plural)
-    app: mysql 
+  clusterIP: None  
+  selector:  
     project: expense
     tier: db
   ports:
-  - protocol: TCP  # "tcp" should be uppercase "TCP"
+  - protocol: TCP  
     port: 3306
-    targetPort: 3306  # "targetPort" needs to be in camel case
+    targetPort: 3306  
 
 ---
 ### Standard Service to access the pods from outside of the cluster
@@ -29,8 +28,8 @@ spec:
     tier: db
   ports:
   - protocol: TCP
-    port: 3306  # service-port
-    targetPort: 3306  # target-port
+    port: 3306  
+    targetPort: 3306  
 
 ---
 ## StatefulSet 
@@ -38,13 +37,14 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: mysql
+  namespace: expense
 spec:
   selector:
     matchLabels:
       app: mysql 
       project: expense
       tier: db 
-  serviceName: "mysql-headless"  # Headless service name required for StatefulSet
+  serviceName: "mysql-headless"  
   replicas: 2
   template:
     metadata:
@@ -60,7 +60,7 @@ spec:
         volumeMounts:
         - name: mysql
           mountPath: /var/lib/mysql
-  volumeClaimTemplates:  # Proper indentation here (aligned with spec)
+  volumeClaimTemplates: 
   - metadata:
       name: mysql
     spec:
