@@ -1,21 +1,22 @@
-### headless service
+### Headless Service
 apiVersion: v1
-kind: service
+kind: Service
 metadata:
   name: mysql-headless
-  Namespace: expense
+  namespace: expense  # "Namespace" should be "namespace" (lowercase)
 spec:
-  clusterIp: None
-  selector: 
+  clusterIP: None  # "clusterIp" should be "clusterIP" (case-sensitive)
+  selector:  # Corrected key (singular, not plural)
     app: mysql 
     project: expense
     tier: db
   ports:
-  - protocol: tcp
+  - protocol: TCP  # "tcp" should be uppercase "TCP"
     port: 3306
-    target port: 3306
+    targetPort: 3306  # "targetPort" needs to be in camel case
+
 ---
-### standared service to access the pods from outside of the cluster
+### Standard Service to access the pods from outside of the cluster
 apiVersion: v1
 kind: Service
 metadata:
@@ -28,11 +29,11 @@ spec:
     tier: db
   ports:
   - protocol: TCP
-    port: 3306 #service-port
-    targetPort: 3306 #target-port
----
+    port: 3306  # service-port
+    targetPort: 3306  # target-port
 
-## statefullset 
+---
+## StatefulSet 
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -43,8 +44,8 @@ spec:
       app: mysql 
       project: expense
       tier: db 
-  serviceName: "mysql-headless" ### headless service name we have to give here
-  replicas: 2 
+  serviceName: "mysql-headless"  # Headless service name required for StatefulSet
+  replicas: 2
   template:
     metadata:
       labels:
@@ -59,13 +60,12 @@ spec:
         volumeMounts:
         - name: mysql
           mountPath: /var/lib/mysql
-  volumeClaimTemplates: #### volume can be assigned to each pod saparately
+  volumeClaimTemplates:  # Proper indentation here (aligned with spec)
   - metadata:
       name: mysql
     spec:
-      accessModes: [ "ReadWriteOnce" ]
+      accessModes: ["ReadWriteOnce"]
       storageClassName: "expense-sc"
       resources:
         requests:
           storage: 1Gi
-
